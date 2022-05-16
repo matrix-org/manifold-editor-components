@@ -1,7 +1,21 @@
 {
   "name": "@thirdroom/manifold-editor-components",
   "version": "0.0.1",
+  "publishConfig": {
+    "access": "public"
+  },
   "type": "module",
+  "main": "./dist/manifold-editor-components.es.js",
+  "browser": "./dist/manifold-editor-components.es.js",
+  "exports": {
+    ".": "./dist/manifold-editor-components.es.js"
+  },
+  "types": "./dist/lib.d.ts",
+  "license": "MPL-2.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/matrix-org/manifold-editor-components"
+  },
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
@@ -13,6 +27,9 @@
     "react-virtualized-auto-sizer": ">=1.0.6",
     "react-window": ">=1.8.7"
   },
+  "files": [
+    "/dist"
+  ],
   "devDependencies": {
     "@types/node": "^17.0.33",
     "@types/react": "^18.0.0",
