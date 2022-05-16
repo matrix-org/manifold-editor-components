@@ -1,0 +1,149 @@
+:root {
+  --panel: #282C31;
+  --panel2: #3A4048;
+  --text: #ffffff;
+  --text2: #9FA4B5;
+  --hover: #4B5562;
+  --hover2: #636F80;
+  --selected: #006EFF;
+  --blue-hover: #4D93F1;
+  --blue-pressed: #0554BC;
+  --border: 1px solid #5D646C;
+  --input-background: #070809;
+}
+
+.Panel {
+  font-family: sans-serif;
+  font-size: 12px;
+  width: 320px;
+  height: 640px;
+  outline: none;
+  user-select: none;
+  position: relative;
+  background-color: var(--panel2)
+}
+
+.TreeView__node {
+  display: flex;
+  flex-direction: column;
+  outline: none;
+  overflow: hidden;
+  background-color: var(--panel);
+  color: var(--text2);
+}
+
+.TreeView__node--root {
+  border-bottom: var(--border);
+  background-color: var(--panel2);
+}
+
+.TreeView__node--selected, .TreeView__node:focus {
+  color: var(--text);
+}
+
+.TreeView__node:focus {
+  background-color: var(--hover);
+}
+
+.TreeView__node--selected {
+  background-color: var(--selected);
+}
+
+.TreeView__node--selected:focus {
+  background-color: var(--blue-hover);
+}
+
+.TreeView__node--active, .TreeView__node:active {
+  background-color: var(--blue-pressed);
+}
+
+.TreeView__drop-target {
+  height: 4px;
+  box-sizing: content-box;
+}
+
+.TreeView__drop-target--before.TreeView__drop-target--accept {
+  border-top: 2px solid rgba(255, 255, 255, 0.3);
+}
+
+.TreeView__drop-target--after.TreeView__drop-target--accept {
+  border-bottom: 2px solid rgba(255, 255, 255, 0.3);
+}
+
+.TreeView__node-content {
+  outline: none;
+  display: flex;
+  padding-right: 8px;
+}
+
+.TreeView__leaf-spacer {
+  width: 20px;
+}
+
+.TreeView__node-toggle {
+  position: relative;
+  padding: 2px 4px;
+  margin: 0 4px;
+  border: none;
+  background-color: transparent;
+}
+
+.TreeView__node-toggle:before {
+  content: "►";
+  color: inherit;
+}
+
+.TreeView__node-toggle--expanded:before {
+  content: "▼";
+  color: inherit;
+}
+
+.TreeView__node-toggle:hover {
+  color: var(--text);
+  background-color: var(--hover2);
+  border-radius: 3px;
+}
+
+.TreeView__node-select-target {
+  display: flex;
+  flex: 1;
+  padding: 2px 4px 2px 0;
+}
+
+.TreeView__node-icon {
+  width: 12px;
+  height: 12px;
+  margin: 2px 4px;
+}
+
+.TreeView__node-label-container {
+  display: flex;
+  flex: 1;
+}
+
+.TreeView__rename-input-container {
+  position: relative;
+  height: 15px;
+}
+
+.TreeView__rename-input {
+  position: absolute;
+  top: -3px;
+  background-color: var(--input-background);
+  color: var(--text);
+  border: var(--border);
+  padding: 2px 4px;
+}
+
+.TreeView__node-label {
+  border-radius: 4px;
+  padding: 0 2px;
+  line-height: 20px;
+}
+
+.TreeView__node-label--accept-drop {
+  background-color: rgba(255, 255, 255, 0.3);
+  color: var(--text);
+}
+
+
