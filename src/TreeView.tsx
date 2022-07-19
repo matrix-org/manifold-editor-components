@@ -222,20 +222,11 @@ function TreeNodeItem({
         } else if (!isSelected) {
           onSetSelectedNode(id);
         }
-      }
-    },
-    [id, isSelected, onToggleSelectedNode, onSetSelectedNode]
-  );
-
-  const onClick = useCallback(
-    (e: MouseEvent) => {
-      if (e.detail === 2) {
+      } else if (e.detail === 2) {
         onDoubleClickNode(id);
-      } else if (!e.shiftKey && !isSelected) {
-        onSetSelectedNode(id);
       }
     },
-    [id, onDoubleClickNode, onSetSelectedNode, isSelected]
+    [id, isSelected, onToggleSelectedNode, onSetSelectedNode, onDoubleClickNode]
   );
 
   const onClickToggle = useCallback(
@@ -382,11 +373,10 @@ function TreeNodeItem({
     () => ({
       ref: wrappedRef,
       onMouseDown,
-      onClick,
       onKeyDown,
       tabIndex: 0,
     }),
-    [wrappedRef, onMouseDown, onClick, onKeyDown]
+    [wrappedRef, onMouseDown, onKeyDown]
   );
 
   const toggleProps = useMemo(
