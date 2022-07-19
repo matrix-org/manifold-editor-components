@@ -131,7 +131,6 @@ export interface RenderNodeProps {
   dragContainerProps: {
     ref: Ref<HTMLDivElement>;
     onMouseDown: MouseEventHandler;
-    onClick: MouseEventHandler;
     onKeyDown: KeyboardEventHandler;
     tabIndex: number;
   };
