@@ -231,11 +231,11 @@ function TreeNodeItem({
     (e: MouseEvent) => {
       if (e.detail === 2) {
         onDoubleClickNode(id);
-      } else if (!e.shiftKey) {
+      } else if (!e.shiftKey && !isSelected) {
         onSetSelectedNode(id);
       }
     },
-    [id, onDoubleClickNode, onSetSelectedNode]
+    [id, onDoubleClickNode, onSetSelectedNode, isSelected]
   );
 
   const onClickToggle = useCallback(
