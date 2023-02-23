@@ -20,9 +20,15 @@ import {
   JSXElementConstructor,
   forwardRef,
   ForwardedRef,
+  useImperativeHandle,
 } from "react";
-import { ConnectDragPreview, ConnectDropTarget, useDrag, useDrop } from "react-dnd";
-import { FixedSizeList, areEqual } from "react-window";
+import {
+  ConnectDragPreview,
+  ConnectDropTarget,
+  useDrag,
+  useDrop,
+} from "react-dnd";
+import { FixedSizeList, areEqual, Align } from "react-window";
 import AutoSizer from "react-virtualized-auto-sizer";
 import { useMemo } from "react";
 
@@ -484,17 +490,22 @@ function getNodeKey(index: number, data: TreeNodeItemData) {
   return data.nodes[index].id;
 }
 
-export type TreeViewRefApi = Pick<
-  FixedSizeList<TreeNodeItemData>,
-  "scrollTo" | "scrollToItem"
->;
+export type TreeViewRefApi = {
+  scrollToNode: (nodeId: number, align?: Align) => void;
+};
 
 interface StackNode {
   node: TreeNode;
   depth: number;
 }
 
-function treeWalker(tree: TreeNode, expanded: number[], selected: number[], active?: number, focused?: number): InternalTreeNode[] {
+function treeWalker(
+  tree: TreeNode,
+  expanded: number[],
+  selected: number[],
+  active?: number,
+  focused?: number
+): InternalTreeNode[] {
   const nodes: InternalTreeNode[] = [];
   const stack: StackNode[] = [];
 
@@ -516,7 +527,7 @@ function treeWalker(tree: TreeNode, expanded: number[], selected: number[], acti
       isSelected: selected.includes(node.id),
       isActive: node.id === active,
       isFocused: node.id === focused,
-      isLeaf: node.children === undefined || node.children.length === 0
+      isLeaf: node.children === undefined || node.children.length === 0,
     });
 
     if (isExpanded && node.children && node.children.length > 0) {
@@ -579,7 +590,6 @@ function getChildren(root: TreeNode, id: number): number[] {
   return children;
 }
 
-
 export const TreeView = forwardRef<TreeViewRefApi, TreeViewProps>(
   (
     {
@@ -606,6 +616,7 @@ export const TreeView = forwardRef<TreeViewRefApi, TreeViewProps>(
     },
     ref
   ) => {
+    const listRef = useRef<FixedSizeList<TreeNodeItemData>>(null);
     const [focused, setFocused] = useState<number | undefined>();
     const [expanded, setExpanded] = useState<number[]>([]);
     const nodes = treeWalker(tree, expanded, selected, active, focused);
@@ -619,52 +630,60 @@ export const TreeView = forwardRef<TreeViewRefApi, TreeViewProps>(
       canDrop,
     });
 
-    const onExpandNode = useCallback(
-      (nodeId: number) => {
-        setExpanded((expanded) => expanded.includes(nodeId) ? expanded : [...expanded, nodeId]);
-      },
-      []
-    );
-  
-    const onCollapseNode = useCallback(
-      (nodeId: number) => {
-        setExpanded((expanded) => expanded.filter((expandedId) => expandedId !== nodeId));
-      },
-      []
-    );
-  
+    const onExpandNode = useCallback((nodeId: number) => {
+      setExpanded((expanded) =>
+        expanded.includes(nodeId) ? expanded : [...expanded, nodeId]
+      );
+    }, []);
+
+    const onCollapseNode = useCallback((nodeId: number) => {
+      setExpanded((expanded) =>
+        expanded.filter((expandedId) => expandedId !== nodeId)
+      );
+    }, []);
+
     const onExpandChildren = useCallback(
       (nodeId: number) => {
         setExpanded((expanded) => {
           const children = getChildren(tree, nodeId);
-          return Array.from(new Set([...expanded, ...children]))
+          return Array.from(new Set([...expanded, ...children]));
         });
       },
       [tree]
     );
-  
+
     const onCollapseChildren = useCallback(
       (nodeId: number) => {
         setExpanded((expanded) => {
           const children = getChildren(tree, nodeId);
-          return expanded.filter((expandedNode) => !children.includes(expandedNode));
+          return expanded.filter(
+            (expandedNode) => !children.includes(expandedNode)
+          );
         });
       },
       [tree]
     );
-  
-    const onExpandAllNodes = useCallback(
-      () => {
-        setExpanded(nodes.filter(node => !node.isLeaf).map((node) => node.id));
-      },
+
+    const onExpandAllNodes = useCallback(() => {
+      setExpanded(nodes.filter((node) => !node.isLeaf).map((node) => node.id));
+    }, [nodes]);
+
+    const onCollapseAllNodes = useCallback(() => {
+      setExpanded([]);
+    }, []);
+
+    useImperativeHandle(
+      ref,
+      () => ({
+        scrollToNode: (nodeId: number, align?: Align) => {
+          const index = nodes.findIndex((node) => node.id === nodeId);
+
+          if (index !== -1) {
+            listRef.current?.scrollToItem(index, align);
+          }
+        },
+      }),
       [nodes]
-    );
-  
-    const onCollapseAllNodes = useCallback(
-      () => {
-        setExpanded([]);
-      },
-      []
     );
 
     return (
@@ -676,7 +695,7 @@ export const TreeView = forwardRef<TreeViewRefApi, TreeViewProps>(
         {({ height, width }: { height: number; width: number }) => {
           return (
             <FixedSizeList
-              ref={ref as ForwardedRef<FixedSizeList<TreeNodeItemData>>}
+              ref={listRef}
               height={height}
               width={width}
               itemSize={itemSize}

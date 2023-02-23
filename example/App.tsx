@@ -1,4 +1,4 @@
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { Scene, Object3D, Matrix4 } from "three";
 import { DndProvider } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
@@ -112,6 +112,12 @@ export default function App() {
     const objectC = new Object3D();
     objectC.name = "Object3D C";
     scene.add(objectC);
+
+    for (let i = 0; i < 250; i++) {
+      const child = new Object3D();
+      child.name = `Child${i}`;
+      scene.add(child);
+    }
 
     return {
       scene,
@@ -252,10 +258,18 @@ export default function App() {
     [scene]
   );
 
+  const treeViewRef = useRef(null);
+
+  const scrollTo50 = () => {
+    const child = scene.getObjectByName("Child50");
+    treeViewRef.current.scrollToNode(child.id, "start");
+  };
+
   return (
     <DndProvider backend={HTML5Backend}>
       <div className="Panel">
         <TreeView
+          ref={treeViewRef}
           tree={scene}
           selected={selected}
           active={active}
@@ -371,6 +385,7 @@ export default function App() {
           }}
         </TreeView>
       </div>
+      <button onClick={scrollTo50}>Scroll to ID 50</button>
     </DndProvider>
   );
 }
